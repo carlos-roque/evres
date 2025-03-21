@@ -6,7 +6,7 @@ const useStore = create((set) => ({
   setSorting: (sorting) => set({ sorting }),
   columnFilters: [],
   setColumnFilters: (columnFilters) => set({ columnFilters }),
-  
+
   // Projects data
   projects: [
     {
@@ -43,11 +43,15 @@ const useStore = create((set) => ({
   selectedProject: null,
   setSelectedProject: (project) => set({ selectedProject: project }),
 
-  // Tasks data
+  // Tasks data (Modified to include resource objects)
   tasks: [
     {
       id: 1,
-      resources: ['CR', 'IN', 'JN'],
+      resources: [
+        { initials: 'CR', name: 'Carlos Rodriguez' },
+        { initials: 'IN', name: 'Isabel Newton' },
+        { initials: 'JN', name: 'John Newman' },
+      ],
       title: 'Electrical Crew #1',
       dueDate: '04/11/2025',
       description: 'Lorem ipsum is simply dummy text of the printing and typeset...',
@@ -55,7 +59,10 @@ const useStore = create((set) => ({
     },
     {
       id: 2,
-      resources: ['JD', 'JS'],
+      resources: [
+        { initials: 'JD', name: 'James Dean' },
+        { initials: 'JS', name: 'Jane Smith' },
+      ],
       title: 'Plumbing Team Alpha',
       dueDate: '03/15/2025',
       description: 'Installation of main water supply lines and fixtures...',
@@ -63,7 +70,11 @@ const useStore = create((set) => ({
     },
     {
       id: 3,
-      resources: ['TR', 'KL', 'BM'],
+      resources: [
+        { initials: 'TR', name: 'Tom Richards' },
+        { initials: 'KL', name: 'Karen Lewis' },
+        { initials: 'BM', name: 'Bob Miller' }
+      ],
       title: 'HVAC Installation',
       dueDate: '05/20/2025',
       description: 'Central air conditioning system setup and testing...',
@@ -71,7 +82,10 @@ const useStore = create((set) => ({
     },
     {
       id: 4,
-      resources: ['PQ', 'RS'],
+      resources: [
+        { initials: 'PQ', name: 'Peter Quinn' },
+        { initials: 'RS', name: 'Ronda Styles' },
+      ],
       title: 'Foundation Work',
       dueDate: '02/28/2025',
       description: 'Concrete pouring and foundation reinforcement...',
@@ -79,7 +93,11 @@ const useStore = create((set) => ({
     },
     {
       id: 5,
-      resources: ['AX', 'BY', 'CZ'],
+      resources: [
+        { initials: 'AX', name: 'Alex Xavier' },
+        { initials: 'BY', name: 'Bob Young' },
+        { initials: 'CZ', name: 'Carlos Zapata' },
+      ],
       title: 'Roofing Team #2',
       dueDate: '06/05/2025',
       description: 'Shingle installation and waterproofing...',
@@ -87,7 +105,10 @@ const useStore = create((set) => ({
     },
     {
       id: 6,
-      resources: ['DW', 'EV'],
+      resources: [
+        { initials: 'DW', name: 'David Wilson' },
+        { initials: 'EV', name: 'Emily Vance' },
+      ],
       title: 'Interior Finishing',
       dueDate: '07/15/2025',
       description: 'Wall painting and trim installation...',
@@ -95,7 +116,11 @@ const useStore = create((set) => ({
     },
     {
       id: 7,
-      resources: ['FU', 'BT', 'HS'],
+      resources: [
+        { initials: 'FU', name: 'Frank Underwood' },
+        { initials: 'BT', name: 'Bob Taylor' },
+        { initials: 'HS', name: 'Helen Smith' },
+      ],
       title: 'Landscaping Crew',
       dueDate: '08/01/2025',
       description: 'Garden design and plant installation...',
@@ -103,7 +128,7 @@ const useStore = create((set) => ({
     },
   ],
 
-  // Resources data
+  // Resources data (Keep this for the ResourcePool)
   resources: [
     {
       id: 'CR',
@@ -170,23 +195,29 @@ const useStore = create((set) => ({
       currentProject: '2206',
     }
   ],
+    updateTask: (taskId, updatedFields) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === taskId ? { ...task, ...updatedFields } : task
+      ),
+    })),
 
-  // Resource Pool functions
+  // Resource Pool functions (These are fine as they are)
   getAvailableResources: () => {
     const state = useStore.getState();
-    return state.resources.filter(resource => 
+    return state.resources.filter(resource =>
       !resource.currentProject || resource.currentProject === state.selectedProject?.id
     );
   },
 
   getAssignedResources: () => {
     const state = useStore.getState();
-    return state.resources.filter(resource => 
+    return state.resources.filter(resource =>
       resource.currentProject === state.selectedProject?.id
     );
   },
 
-  assignResource: (resourceId, projectId) => 
+  assignResource: (resourceId, projectId) =>
     set(state => ({
       resources: state.resources.map(resource =>
         resource.id === resourceId
@@ -195,7 +226,7 @@ const useStore = create((set) => ({
       )
     })),
 
-  unassignResource: (resourceId) => 
+  unassignResource: (resourceId) =>
     set(state => ({
       resources: state.resources.map(resource =>
         resource.id === resourceId
